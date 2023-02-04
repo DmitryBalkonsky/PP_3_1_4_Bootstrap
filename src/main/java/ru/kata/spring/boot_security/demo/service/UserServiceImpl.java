@@ -41,10 +41,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserById(User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null &&
-                !userRepository.findByUsername(user.getUsername()).getId().equals(user.getId())) {
-            throw new InvalidParameterException("Cannot save user, such email already exists in the database: " + user.getUsername());
+        User existingUser = userRepository.findByUsername(user.getUsername());
+        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+            throw new InvalidParameterException("Cannot save user, such email already exists in the database: "
+                    + user.getUsername());
         }
+
         if (user.getPassword().isEmpty()) {
             user.setPassword(userRepository.findById(user.getId()).get().getPassword());
         } else {
